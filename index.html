@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilot Chat Interface</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .chat-history {
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+        .user-input {
+            resize: none;
+            width: 100%;
+            height: 100px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .send-button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            text-align: center;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            transition-duration: 0.4s;
+        }
+        .send-button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <h1>Pilot Chat Interface</h1>
+
+    <div class="chat-history" id="chatHistory"></div>
+
+    <div>
+        <textarea id="userInput" class="user-input"></textarea>
+    </div>
+
+    <div>
+        <button class="send-button" onclick="processInput()">Send</button>
+    </div>
+
+    <div>
+        <label>Pilot can make mistakes</label>
+    </div>
+</div>
+
+<script>
+    async function processInput() {
+        var userInput = document.getElementById('userInput').value;
+        displayMessage('You: ' + userInput);
+
+        // Make a request to the OpenAI API (replace 'YOUR_OPENAI_API_KEY' with your actual API key)
+        const apiKey = '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';
+        const apiUrl = 'https://api.openai.com/v1/engines/davinci/completions';
+
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiKey
+            },
+            body: JSON.stringify({
+                prompt: 'You: ' + userInput + '\nPilot:',
+                max_tokens: 150
+            })
+        });
+
+        const data = await response.json();
+        const pilotResponse = 'Pilot: ' + data.choices[0].text;
+
+        displayMessage(pilotResponse);
+    }
+
+    function displayMessage(message) {
+        var chatHistory = document.getElementById('chatHistory');
+        chatHistory.value += message + '\n';
+        chatHistory.scrollTop = chatHistory.scrollHeight; // Auto-scroll to the bottom
+    }
+</script>
+</body>
+      </html>
